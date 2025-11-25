@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Tasktool</title>
+    <link rel="stylesheet" href="/_static/bulma/css/bulma.min.css">
+    <style>
+        body,
+        input,
+        select,
+        button {
+            font-family: Verdana, Geneva, Tahoma, sans-serif;
+            font-size: 1em;
+        }
+
+        input.readonly {
+            border: none;
+        }
+
+        div.htmx-swapping form {
+            opacity: 0;
+            transition: opacity 1s ease-out;
+        }
+    </style>
+    <script src="/_static/htmx.org/dist/htmx.min.js"></script>
+    <script src="/_static/htmx-ext-form-json/form-json.js"></script>
+</head>
+
+<body class="p-6">
+    {#let editable=(edit ?: false)}
+    {#let task=(task ?: null)}
+    {#let tasks=(tasks.orEmpty)}
+    {#if task}
+    <h1 class="title">Task {id}</h1>
+    <a href="/tasks/">All tasks</a>
+    <div id="content">
+        {#if editable}
+        {#include $editabletask /}
+        {#else}
+        {#include $plaintask /}
+        {/if}
+    </div>
+    {#else}
+    <h1 class="title">Tasks</h1>
+    {#fragment id=content}
+    <div id="content">
+        {#for task in tasks}
+        {#include $plaintask /}
+        {/for}
+        <hr>
+        {#include $new /}
+    </div>
+    {/fragment}
+    {/if}
+
+    {#fragment id=plaintask _hidden}
+    <div class="task mt-1">
+        <form hx-ext="form-json" hx-put="/tasks/{task.id}" hx-target="closest div" hx-trigger="change"
+            hx-swap="outerHTML" autocomplete="off">
+
+            <div class="level is-mobile field is-grouped">
+                <label class="checkbox">
+                    <input name="done" type="checkbox" {#if task.done}checked{/if} />
+                </label>
+                <input class="input readonly" name="name" readonly value="{task.name}" />
+                <input name="priority" type="hidden" value="{task.priority}" />
+
+                {#switch task.priority}
+                {#case LOW}
+                <div class="tag is-medium is-success">low</div>
+                {#case NORMAL}
+                <div class="tag is-medium is-warning">normal</div>
+                {#case URGENT}
+                <div class="tag is-medium is-danger">urgent</div>
+                {/switch}
+
+                <div class="level-item">{task.formatTimestamp}</div>
+
+                <button class="button" hx-get="/tasks/{task.id}/edit" hx-target="closest div.task"
+                    hx-swap="outerHTML">edit</button>
+                <button class="button" hx-delete="/tasks/{task.id}" hx-target="closest div.task"
+                    hx-swap="outerHTML swap:1s">delete</button>
+            </div>
+
+        </form>
+    </div>
+    {/fragment}
+
+    {#fragment id=editabletask _hidden}
+    <div class="task mt-1">
+        <form hx-ext="form-json" hx-put="/tasks/{task.id}" hx-target="closest div" hx-swap="outerHTML"
+            autocomplete="off">
+
+            <div class="level is-mobile field is-grouped">
+                <label class="checkbox">
+                    <input name="done" type="checkbox" {#if task.done}checked{/if} />
+                </label>
+                <input class="input" name="name" type="text" size="40" value="{task.name}" />
+
+                <div class="select">
+                    <select name="priority">
+                        {#switch task.priority}
+                        {#case LOW}
+                        <option value="LOW" selected="true">low</option>
+                        <option value="NORMAL">normal</option>
+                        <option value="URGENT">urgent</option>
+                        {#case NORMAL}
+                        <option value="LOW">low</option>
+                        <option value="NORMAL" selected="true">normal</option>
+                        <option value="URGENT">urgent</option>
+                        {#case URGENT}
+                        <option value="LOW">low</option>
+                        <option value="NORMAL">normal</option>
+                        <option value="URGENT" selected="true">urgent</option>
+                        {/switch}
+                    </select>
+                </div>
+
+                <button class="button" type="submit">save</button>
+                <button class="button" type="cancel">cancel</button>
+            </div>
+
+        </form>
+    </div>
+    {/fragment}
+
+    {#fragment id=new _hidden}
+    <form hx-ext="form-json" hx-post="/tasks" hx-target="#content" autocomplete="off">
+
+        <div class="level is-mobile field is-grouped">
+            <div>+</div>
+            <input class="input" type="text" size="40" name="name" value="" />
+            <div class="select">
+                <select name="priority">
+                    <option value="LOW">low</option>
+                    <option value="NORMAL">normal</option>
+                    <option value="URGENT">urgent</option>
+                </select>
+            </div>
+            <button class="button" type="submit">create</button>
+        </div>
+
+    </form>
+    {/fragment}
+
+</body>
+
+</html>
