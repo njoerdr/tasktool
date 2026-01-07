@@ -1,6 +1,8 @@
 # Tasktool
 
-A hexagonal flavored webapplication for trivial task management. Exploring [Quarkus](https://quarkus.io) with Panache and Qute, [HTMX](https://htmx.org/) and [Bulma](https://bulma.io/).
+A hexagonal flavored web application for trivial task management. Exploring [Quarkus](https://quarkus.io) with Panache and Qute, [HTMX](https://htmx.org/) and [Bulma](https://bulma.io/).
+
+Find the applications entry point at [http://localhost:8080/tasks](http://localhost:8080/tasks) when running.
 
 ## Running the application in dev mode
 
@@ -10,7 +12,7 @@ You can run your application in dev mode that enables live coding using:
 ./mvnw quarkus:dev
 ```
 
-A working docker installation is required for spinnning up the database using testcontainers.
+A working docker installation is required for spinning up the database using testcontainers.
 
 ## Database for production builds
 
