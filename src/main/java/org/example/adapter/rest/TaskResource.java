@@ -5,6 +5,7 @@ import jakarta.transaction.Transactional;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.HeaderParam;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
@@ -20,7 +21,6 @@ import java.util.Objects;
 
 import org.example.core.domain.Task;
 import org.example.core.port.TaskRepository;
-import org.jboss.resteasy.reactive.RestHeader;
 
 @Path("/tasks")
 public class TaskResource {
@@ -43,7 +43,7 @@ public class TaskResource {
 
     @GET
     @Produces(MediaType.TEXT_HTML)
-    public String getHtmlAllTasks(@RestHeader("HX-Request") boolean hxRequest) {
+    public String getHtmlAllTasks(@HeaderParam("HX-Request") boolean hxRequest) {
 
         if (hxRequest) {
             return page.getFragment("content").data("tasks", repository.retrieveAll()).render();
@@ -56,7 +56,7 @@ public class TaskResource {
     @Produces(MediaType.TEXT_HTML)
     @Path("/{id}")
     public String getHtmlSingleTask(
-            @RestHeader("HX-Request") boolean hxRequest,
+            @HeaderParam("HX-Request") boolean hxRequest,
             @PathParam("id") Long id) {
 
         if (hxRequest) {
@@ -70,7 +70,7 @@ public class TaskResource {
     @Produces(MediaType.TEXT_HTML)
     @Path("/{id}/edit")
     public String getHtmlTaskEditable(
-            @RestHeader("HX-Request") boolean hxRequest,
+            @HeaderParam("HX-Request") boolean hxRequest,
             @PathParam("id") Long id) {
 
         if (hxRequest) {
@@ -84,7 +84,7 @@ public class TaskResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.TEXT_HTML)
-    public Response create(@RestHeader("HX-Request") boolean hxRequest, Task task) {
+    public Response create(@HeaderParam("HX-Request") boolean hxRequest, Task task) {
 
         if (Objects.isNull(task)) {
             return Response.notAcceptable(null).build();
